@@ -6,7 +6,7 @@ on:
  
 jobs:
 
-    trigger_javaci: 
+    trigger_databaseci: 
       
        uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
       
