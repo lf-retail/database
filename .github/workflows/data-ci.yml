@@ -1,12 +1,15 @@
 name: Database CI
 
 on:
- workflow_dispatch:
+ #workflow_dispatch:
+  push:
+   branches:
+    - main
  
  
 jobs:
 
-    trigger_databaseci: 
+   trigger_databaseci: 
       
        uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
       
