@@ -1,17 +1,14 @@
-name: Database CI
+name: database CI
 
 on:
- workflow_dispatch:
- # push:
-  # branches:
-   # - main
- 
- 
+  workflow_dispatch:
+  
 jobs:
-
-   trigger_databaseci: 
+  trigger_database:
+    uses: viveksundar5//lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
+    
+    secrets:
+      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       
-       uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
-      
-       secrets:
-         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
