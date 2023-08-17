@@ -7,8 +7,9 @@ env:
   Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
   
 jobs:
-  caller-jboss-deploy:
+  caller-Database-deploy:
      runs-on: self-hosted
+     steps:
       - name: Trigger Caller Workflow
         uses: actions/checkout@v3
      
