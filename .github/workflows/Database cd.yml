@@ -4,11 +4,6 @@ on:
  workflow_dispatch:
  
 jobs:
-  caller-Database-deploy:
-     runs-on: self-hosted
-     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
   trigger_database:
     uses: lf-common-repo/shared-workflow/.github/workflows/Database CD.yml@main
 
