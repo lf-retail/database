@@ -11,12 +11,6 @@ jobs:
      runs-on: self-hosted
      steps:
       - name: Trigger Caller Workflow
-        uses: actions/checkout@v3
+        uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
      
-      - name: Run Called Workflow
-        run: |
-          curl -X POST \
-          -H "Accept: application/vnd.github.v3+json" \
-          -H "Authorization: Bearer ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}" \
-          https://api.github.com/repos/lf-common-repo/shared-workflow/actions/workflows/Database CD.yml/dispatches \
-          -d '{"ref":"main"}'
+     
