@@ -1,11 +1,21 @@
-name: Database CD
+name: Database cd
 
 on:
-  workflow_dispatch:
+ workflow_dispatch:
+ 
+env: 
+  Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
   
 jobs:
-  trigger_database:
-   uses: lf-common-repo/shared-workflow/.github/workflows/Database CD.yml@main
-    
-   secrets:
-      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+  caller-jboss-deploy:
+     runs-on: self-hosted
+      - name: Trigger Caller Workflow
+        uses: actions/checkout@v3
+     
+      - name: Run Called Workflow
+        run: |
+          curl -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: Bearer ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}" \
+          https://api.github.com/repos/lf-common-repo/shared-workflow/actions/workflows/Database CD.yml/dispatches \
+          -d '{"ref":"main"}'
