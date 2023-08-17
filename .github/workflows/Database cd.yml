@@ -5,9 +5,10 @@ on:
   
 jobs:
   trigger_database:
-   runs-on: [self-hosted]
-  steps:
-    uses: lf-common-repo/shared-workflow/.github/workflows/Database CD.yml@main
+    runs-on: [self-hosted]
+    steps:
+      - name: Checkout Repository
+        uses: lf-common-repo/shared-workflow/.github/workflows/Database CD.yml@main
     
-    secrets:
-      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
+      #secrets:
+      #Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
