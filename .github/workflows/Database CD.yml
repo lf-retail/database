@@ -1,0 +1,21 @@
+name: Deploy MySQL Script
+
+on: 
+   workflow_dispatch
+
+jobs:
+   create-db:
+    runs-on: self-hosted
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+   
+      - name: Run MySQL Script  
+        env:
+          DB_DATABASE: vivek
+          DB_USER: root
+          DB_PASSWORD: Svs@9551
+          DB_HOST: 127.0.0.1
+        run: |
+         & "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql" -h ${{ env.DB_HOST }} --port 3306 -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} ${{ env.DB_Database }} -e "source c:\init.sql"
