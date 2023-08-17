@@ -3,9 +3,6 @@ name: Database cd
 on:
  workflow_dispatch:
  
-env: 
-  Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
-  
 jobs:
   caller-Database-deploy:
      runs-on: self-hosted
@@ -14,6 +11,9 @@ jobs:
         uses: actions/checkout@v2
   trigger_database:
     uses: lf-common-repo/shared-workflow/.github/workflows/Database CD.yml@main
+
+    secrets:
+      Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
 
          
         
