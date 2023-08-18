@@ -6,6 +6,7 @@ on:
 jobs:
   trigger_database:
     uses: lf-common-repo/shared-workflow/.github/workflows/Database CD.yml@main
+    
 
     secrets:
       Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
