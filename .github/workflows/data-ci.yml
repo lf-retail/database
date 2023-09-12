@@ -1,15 +1,15 @@
 name: database CI
 
 on:
-  workflow_dispatch
-  #workflow_call:
-   # secrets:
-      #Workflow2_PAT_TOKEN_GITHUB:
-       # required: true
-      #SONAR_TOKEN:
-      #  required: true
-      #SONAR_HOST_URL:
-        #required: true
+  #workflow_dispatch
+  workflow_call:
+    secrets:
+      Workflow2_PAT_TOKEN_GITHUB:
+        required: true
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
 jobs:
   trigger_database:
     uses: lf-common-repo/shared-workflow/.github/workflows/databaseci.yml@main
