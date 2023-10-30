@@ -18,7 +18,7 @@ jobs:
 
     - name: Run SQL Deployment Script
       run: |
-        sqlcmd -S server -U username -P password -d database -i deploy.sql
+        sqlcmd -S 127.0.0.1 -U root -P Svs@9551 -d vivek -i deploy.sql
 
     - name: Publish to GitHub Packages
       run: |
