@@ -1,22 +1,24 @@
-name: Build and Publish SQL Deployment Script
+name: SQL Deployment
 
 on:
-  workflow_dispatch
+ workflow_dispatch
 
 jobs:
-  build:
+  deploy_sql:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up SQL Server
-      uses: microsoft/setup-msbuild@v1
-
-    - name: Build SQL Deployment Script
+    - name: Install SQL Server tools
       run: |
-        sqlcmd -S server -d database -U username -P password -i deploy.sql
+        sudo apt-get update
+        sudo apt-get install -y mssql-tools
+
+    - name: Run SQL Deployment Script
+      run: |
+        sqlcmd -S server -U username -P password -d database -i deploy.sql
 
     - name: Publish to GitHub Packages
       run: |
