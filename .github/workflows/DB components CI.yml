@@ -1,0 +1,30 @@
+name: Build and Publish SQL Deployment Script
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up SQL Server
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Build SQL Deployment Script
+      run: |
+        sqlcmd -S server -d database -U username -P password -i deploy.sql
+
+    - name: Publish to GitHub Packages
+      run: |
+        echo "registry=https://nuget.pkg.github.com/YOUR_USERNAME/index.json" >> ~/.npmrc
+        echo "//npm.pkg.github.com/:_authToken=\${{secrets.GITHUB_TOKEN}}" >> ~/.npmrc
+        npm publish
+
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN }}
