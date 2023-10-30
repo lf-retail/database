@@ -1,9 +1,7 @@
 name: Build and Publish SQL Deployment Script
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch
 
 jobs:
   build:
