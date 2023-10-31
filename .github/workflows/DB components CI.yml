@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: 11
 
-      - name: Reformat SQL Files
+      - name: Build SQL Files
         uses: credfeto/action-sql-format@v1.4.1
           
       - name: Grant execute permission
@@ -30,7 +30,7 @@ jobs:
 
       - name: SonarCloud Analysis
         run: |
-          ./deploy.sql sonarqube
+          credfeto/action-sql-format@v1.4.1 sonarqube
 
           
       - name: Publish to GitHub Packages
