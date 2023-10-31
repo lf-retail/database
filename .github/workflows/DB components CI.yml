@@ -25,10 +25,13 @@ jobs:
       - name: Reformat SQL Files
         uses: credfeto/action-sql-format@v1.4.1
           
+      - name: Grant execute permission
+        run: chmod +x deploy.sql
+
       - name: SonarCloud Analysis
-        run: 
-            chmod +x deploy.sql
-            ./deploy.sql sonarqube
+        run: |
+          ./deploy.sql sonarqube
+
           
       - name: Publish to GitHub Packages
         run: gh package publish --target 'mysql-database-script' deploy.sql
