@@ -20,6 +20,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.11
+
+      - name: Reformat SQL Files
+        uses: credfeto/action-sql-format@v1.4.1
           
       - name: Cache SonarQube packages
         uses: actions/cache@v1
