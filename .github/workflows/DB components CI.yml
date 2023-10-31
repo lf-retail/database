@@ -34,6 +34,9 @@ jobs:
 
           
       - name: Publish to GitHub Packages
-        run: ghcr.io package publish --target 'mysql-database-script' deploy.sql
+        run:
+           gh auth login
+           gh package publish ./deploy.sql --target 'mysql-database-script' --registry ghcr.io/lf-retail/database
+
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
