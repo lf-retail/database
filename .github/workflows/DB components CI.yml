@@ -10,7 +10,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
@@ -24,32 +24,13 @@ jobs:
       - name: Reformat SQL Files
         uses: credfeto/action-sql-format@v1.4.1
           
-      - name: Cache SonarQube packages
-        uses: actions/cache@v1
-        with:
-          path: ~\sonar\cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
+     
           
-      - name: Cache SonarQube scanner
-        id: cache-sonar-scanner
-        uses: actions/cache@v1
-        with:
-          path: .\.sonar\scanner
-          key: ${{ runner.os }}-sonar-scanner
-          restore-keys: ${{ runner.os }}-sonar-scanner
+
           
-      - name: Install SonarQube scanner
-        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
-        shell: powershell
-        run: |
-          New-Item -Path .\.sonar\scanner -ItemType Directory
-          dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-          
-      - name: Build and analyze
+      - name: Test
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  
-        shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"sql-server-test" /d:sonar.login="$env:TOKEN" /d:sonar.host.url="$env:URL"
           dotnet build
@@ -58,6 +39,6 @@ jobs:
           
       - name: Publish to GitHub Packages
         run: |
-          gh package publish --target 'mysql-database-script' script.sql
+          gh package publish --target 'mysql-database-script' deploy.sql
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
