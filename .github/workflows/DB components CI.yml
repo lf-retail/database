@@ -26,7 +26,9 @@ jobs:
         uses: credfeto/action-sql-format@v1.4.1
           
       - name: SonarCloud Analysis
-        run: ./deploy.sql sonarqube
+        run: 
+            chmod +x deploy.sql
+            ./deploy.sql sonarqube
           
       - name: Publish to GitHub Packages
         run: gh package publish --target 'mysql-database-script' deploy.sql
