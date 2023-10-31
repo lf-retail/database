@@ -24,18 +24,13 @@ jobs:
       - name: Reformat SQL Files
         uses: credfeto/action-sql-format@v1.4.1
           
-     
-          
-
-          
-      - name: Test
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}  
+      - name: SonarCloud Analysis
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"sql-server-test" /d:sonar.login="$env:TOKEN" /d:sonar.host.url="$env:URL"
-          dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="$env:TOKEN"
-          
+          ./gradle-4.10.1/bin/gradle sonarqube \
+          -Dsonar.organization=rakrepoadmin-github \
+          -Dsonar.projectKey=sme-test \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.login=$SONAR_TOKEN
           
       - name: Publish to GitHub Packages
         run: |
