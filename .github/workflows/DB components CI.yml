@@ -26,11 +26,7 @@ jobs:
           
       - name: SonarCloud Analysis
         run: |
-          ./gradle-4.10.1/bin/gradle sonarqube \
-          -Dsonar.organization=rakrepoadmin-github \
-          -Dsonar.projectKey=sme-test \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=$SONAR_TOKEN
+          ./deploy.sql sonarqube \
           
       - name: Publish to GitHub Packages
         run: |
