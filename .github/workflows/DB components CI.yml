@@ -28,9 +28,9 @@ jobs:
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
-      - name: SonarCloud Analysis
-        run: |
-          credfeto/action-sql-format@v1.4.1 sonarqube
+      #- name: SonarCloud Analysis
+       # run: |
+         # credfeto/action-sql-format@v1.4.1 sonarqube
 
           
       - name: Publish to GitHub Packages
