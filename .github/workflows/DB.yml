@@ -27,7 +27,7 @@ jobs:
 
       - name: SonarCloud Analysis
         run: |
-          sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+         ./deploy.sql sonarqube 
 
       - name: Publish to GitHub Packages
         run: |
