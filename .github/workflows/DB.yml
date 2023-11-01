@@ -22,15 +22,6 @@ jobs:
         with:
           java-version: 11
           
-      - name: Install SQLCmd
-        run: |
-          sudo apt-get update
-          sudo apt-get install mssql-tools
-
-      - name: Build SQL Files
-        run: |
-            sql-build-command -i input.sql -o deploy.sql
-          
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
