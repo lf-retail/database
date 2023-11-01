@@ -26,7 +26,7 @@ jobs:
         run: chmod +x deploy.sql
 
       - name: Grant execute permission
-        run: sonar-project.properties
+        run: chmod +x sonar-project.properties
 
 
       - name: SonarCloud Analysis
