@@ -25,15 +25,16 @@ jobs:
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
-      #- name: SonarCloud Analysis
-       # run: |
-            #  sonar-scanner deploy.sql -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+      - name: SonarCloud Analysis
+        run: |
+          sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
 
       - name: Publish to GitHub Packages
         run: |
-          zip -r deploy.sql
-         # gh auth login
-          # gh package publish ./deploy.sql --target 'mysql-database-script' --registry ghcr.io/lf-retail/database
+          zip -r deploy.sql.zip deploy.sql
 
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+      - name: Upload ZIP to GitHub Packages
+        uses: actions/upload-artifact@v2
+        with:
+          name: deploy-sql
+          path: deploy.sql.zip
