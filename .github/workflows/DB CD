@@ -1,9 +1,7 @@
 name: Oracle Database Deployment
 
 on:
-  push:
-    branches:
-      - main # Change this to your branch
+ workflow_dispatch
 
 jobs:
   deploy:
@@ -30,9 +28,9 @@ jobs:
         echo 'export LD_LIBRARY_PATH=$ORACLE_HOME/lib' >> $GITHUB_ENV
       shell: bash
 
-    - name: Run deploy.sql
+    - name: Deploy
       run: |
-        sqlplus -s username/password@your_oracle_db @path/to/deploy.sql
+        sqlplus -s viveksundar5/Svs@9551@orclpdb @./deploy.sql
       env:
         ORACLE_HOME: ${{ env.ORACLE_HOME }}
         LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
