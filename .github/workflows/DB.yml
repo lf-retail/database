@@ -22,14 +22,23 @@ jobs:
         with:
           java-version: 11
           
+      - name: Install SonarScanner
+        run: |
+          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip sonar-scanner-cli-4.6.2.2472-linux.zip
+          export PATH="$PATH:$(pwd)/sonar-scanner-cli-4.6.2.2472-linux/bin"
+
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
       - name: SonarCloud Analysis
-        run: sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
-         
+        run: |
+          # Run SonarCloud analysis
+          sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+
       - name: Publish to GitHub Packages
         run: |
+          # Create a ZIP archive of the deploy.sql file
           zip -r deploy.sql.zip deploy.sql
 
       - name: Upload ZIP to GitHub Packages
