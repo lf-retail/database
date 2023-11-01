@@ -3,6 +3,10 @@ name: Build, Test, Upload SQL Server
 on:
   workflow_dispatch
 
+env:
+  TOKEN: ${{ secrets.SONAR_TOKEN }}
+  URL: ${{ secrets.SONAR_HOST_URL }}
+
 jobs:
   build:
     name: Build
@@ -20,16 +24,14 @@ jobs:
 
       - name: Build SQL Files
         run: |
-          # Add your SQL build commands here
-          # For example: sql-build-command -i input.sql -o deploy.sql
+              sql-build-command -i input.sql -o deploy.sql
 
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
       - name: SonarCloud Analysis
         run: |
-          # Add commands to analyze your SQL code with SonarCloud
-          # For example: sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+              sonar-scanner deploy.sql -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
 
       - name: Publish to GitHub Packages
         run: |
