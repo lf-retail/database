@@ -26,7 +26,7 @@ jobs:
         run: chmod +x deploy.sql
 
       - name: SonarCloud Analysis
-        run: ./deploy.sql sonarqube
+        run: sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
          
       - name: Publish to GitHub Packages
         run: |
