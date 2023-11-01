@@ -21,10 +21,15 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
+          
+      - name: Install SQLCmd
+        run: |
+          sudo apt-get update
+          sudo apt-get install mssql-tools
 
       - name: Build SQL Files
         run: |
-            credfeto/action-sql-format@v1.4.1
+            sql-build-command -i input.sql -o deploy.sql
           
       - name: Grant execute permission
         run: chmod +x deploy.sql
