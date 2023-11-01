@@ -3,10 +3,6 @@ name: Database
 on:
   workflow_dispatch
 
-env:
-  TOKEN: ${{ secrets.SONAR_TOKEN }}
-  URL: ${{ secrets.SONAR_HOST_URL }}
-
 jobs:
   build:
     name: Build
