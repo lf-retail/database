@@ -1,4 +1,3 @@
--- Create a new database if it doesn't exist
 USE master;
 GO
 
@@ -8,7 +7,6 @@ BEGIN
 END;
 GO
 
--- Use the newly created database
 USE Hello;
 GO
 
