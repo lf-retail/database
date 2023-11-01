@@ -24,8 +24,8 @@ jobs:
 
       - name: Build SQL Files
         run: |
-              sql-build-command -i input.sql -o deploy.sql
-
+            credfeto/action-sql-format@v1.4.1
+          
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
