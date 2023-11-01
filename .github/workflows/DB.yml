@@ -24,13 +24,10 @@ jobs:
        
       - name: Grant execute permission
         run: chmod +x deploy.sql
-        
-      - name: Grant execute permission
-        run: chmod +x sqlscan.ps1
 
       - name: SonarCloud Analysis
         run: |
-          ./sqlscan.ps1 sonarqube
+          ./sonar-project.properties sonarqube
 
       - name: Publish to GitHub Packages
         run: |
