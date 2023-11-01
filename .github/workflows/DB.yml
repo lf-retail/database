@@ -26,9 +26,6 @@ jobs:
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
-      - name: SonarCloud Analysis
-
-
       - name: Upload ZIP
         run: |
           zip -r deploy.sql.zip deploy.sql
