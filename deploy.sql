@@ -2,7 +2,6 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'Vive')
 BEGIN
     CREATE DATABASE Vive;
 END;
@@ -19,4 +18,4 @@ CREATE TABLE Customers (
     LastName VARCHAR(50),
     Email VARCHAR(100)
 );
-GO
+
