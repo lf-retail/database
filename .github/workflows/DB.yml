@@ -1,0 +1,40 @@
+name: Build, Test, Upload SQL Server
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Build SQL Files
+        run: |
+          # Add your SQL build commands here
+          # For example: sql-build-command -i input.sql -o deploy.sql
+
+      - name: Grant execute permission
+        run: chmod +x deploy.sql
+
+      - name: SonarCloud Analysis
+        run: |
+          # Add commands to analyze your SQL code with SonarCloud
+          # For example: sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+
+      - name: Publish to GitHub Packages
+        run: |
+          gh auth login
+          gh package publish ./deploy.sql --target 'mysql-database-script' --registry ghcr.io/lf-retail/database
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
