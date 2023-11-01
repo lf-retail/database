@@ -27,7 +27,7 @@ jobs:
 
       - name: SonarCloud Analysis
         run: |
-          ./deploy.sql sonarqube
+          ./sqlscan.ps1 sonarqube
 
       - name: Publish to GitHub Packages
         run: |
