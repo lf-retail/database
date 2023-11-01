@@ -26,8 +26,7 @@ jobs:
         run: chmod +x deploy.sql
 
       - name: SonarCloud Analysis
-        run: |
-         ./deploy.sql sonarqube 
+      - uses: sonarsource/sonarqube-scan-action@master
 
       - name: Publish to GitHub Packages
         run: |
