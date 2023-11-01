@@ -1,7 +1,7 @@
 name: Oracle Database Deployment
 
 on:
- workflow_dispatch
+  workflow_dispatch
 
 jobs:
   deploy:
@@ -14,7 +14,3 @@ jobs:
     - name: Deploy
       run: |
         sqlplus -s viveksundar5/Svs@9551@orclpdb @./deploy.sql
-      env:
-        ORACLE_HOME: ${{ env.ORACLE_HOME }}
-        LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
-      shell: bash
