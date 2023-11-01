@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-      - uses: actions/checkout@v2
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
@@ -25,16 +25,13 @@ jobs:
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
-      - name: Run SonarQube Scanner
+      - name: SonarCloud Analysis
         run: |
           sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
 
-      - name: Upload ZIP
+      - name: Publish to GitHub Packages
         run: |
           zip -r deploy.sql.zip deploy.sql
-
-      - name: List files in workspace
-        run: ls -R
 
       - name: Upload ZIP to GitHub Packages
         uses: actions/upload-artifact@v2
