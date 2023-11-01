@@ -2,14 +2,14 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'YourDatabaseName')
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = Hello)
 BEGIN
-    CREATE DATABASE YourDatabaseName;
+    CREATE DATABASE Hello;
 END;
 GO
 
 -- Use the newly created database
-USE YourDatabaseName;
+USE Hello;
 GO
 
 -- Create a sample table
