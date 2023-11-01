@@ -37,7 +37,7 @@ jobs:
           zip -r deploy.sql.zip deploy.sql
 
       - name: Upload ZIP to GitHub Packages
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-package@v2
         with:
           name: deploy-sql
           path: deploy.sql.zip
