@@ -24,6 +24,7 @@ jobs:
        
       - name: Grant execute permission
         run: chmod +x deploy.sql
+             chmod +x sqlscan.ps1
 
       - name: SonarCloud Analysis
         run: |
