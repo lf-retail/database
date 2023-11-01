@@ -33,6 +33,9 @@ jobs:
         run: |
           zip -r deploy.sql.zip deploy.sql
 
+      - name: List files in workspace
+        run: ls -R
+
       - name: Upload ZIP to GitHub Packages
         uses: actions/upload-artifact@v2
         with:
