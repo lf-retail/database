@@ -13,4 +13,4 @@ jobs:
 
     - name: Deploy
       run: |
-        sqlplus -s viveksundar5/Svs@9551@orclpdb @./deploy.sql
+        "C:\app\db\bin\sqlplus.exe" viveksundar5/Svs@9551@orclpdb @.\deploy.sql
