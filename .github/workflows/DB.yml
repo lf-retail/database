@@ -25,9 +25,9 @@ jobs:
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
-     # - name: SonarCloud Analysis
-       # run: |
-          #sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+      - name: SonarCloud Analysis
+        run: |
+           sonar:sonar deploy.sql \ -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
 
       - name: Upload ZIP
         run: |
