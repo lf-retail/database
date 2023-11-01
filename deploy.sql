@@ -4,12 +4,12 @@ GO
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'YourDatabaseName')
 BEGIN
-    CREATE DATABASE YourDatabaseName;
+    CREATE DATABASE Vive;
 END;
 GO
 
 -- Use the newly created database
-USE YourDatabaseName;
+USE Vive;
 GO
 
 -- Create a sample table
