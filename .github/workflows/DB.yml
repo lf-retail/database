@@ -27,9 +27,9 @@ jobs:
 
       - name: Install SonarScanner
         run: |
-          curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-x.y.z.zip
+          curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.12008.zip
           unzip sonar-scanner.zip
-          export PATH="$PATH:$(pwd)/sonar-scanner-x.y.z/bin"
+          export PATH="$PATH:$(pwd)/sonar-scanner-4.8.0.12008/bin"
         working-directory: ${{ runner.workspace }}
 
       - name: SonarCloud Analysis
