@@ -27,7 +27,7 @@ jobs:
 
       - name: SonarCloud Analysis
         run: |
-           sonar-scanner deploy.sql -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
+           mvn install sonar:sonar \ -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
 
       - name: Upload ZIP
         run: |
