@@ -1,0 +1,39 @@
+name: Oracle Database Deployment
+
+on:
+  push:
+    branches:
+      - main # Change this to your branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Oracle Instant Client
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install alien
+        wget https://download.oracle.com/otn_software/linux/instantclient/213000/instantclient-basic-linux.x64-21.3.0.0.0.zip
+        unzip instantclient-basic-linux.x64-21.3.0.0.0.zip
+        sudo alien -i instantclient-basic-linux.x64-21.3.0.0.0.rpm
+        echo '/usr/lib/oracle/21/client64/lib' | sudo tee -a /etc/ld.so.conf.d/oracle.conf
+        sudo ldconfig
+      shell: bash
+
+    - name: Set up Oracle environment variables
+      run: |
+        echo 'export ORACLE_HOME=/usr/lib/oracle/21/client64' >> $GITHUB_ENV
+        echo 'export LD_LIBRARY_PATH=$ORACLE_HOME/lib' >> $GITHUB_ENV
+      shell: bash
+
+    - name: Run deploy.sql
+      run: |
+        sqlplus -s username/password@your_oracle_db @path/to/deploy.sql
+      env:
+        ORACLE_HOME: ${{ env.ORACLE_HOME }}
+        LD_LIBRARY_PATH: ${{ env.LD_LIBRARY_PATH }}
+      shell: bash
