@@ -25,6 +25,13 @@ jobs:
       - name: Grant execute permission
         run: chmod +x deploy.sql
 
+      - name: Install SonarScanner
+        run: |
+          curl -o sonar-scanner.zip -L https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-x.y.z.zip
+          unzip sonar-scanner.zip
+          export PATH="$PATH:$(pwd)/sonar-scanner-x.y.z/bin"
+        working-directory: ${{ runner.workspace }}
+
       - name: SonarCloud Analysis
         run: |
           sonar-scanner -Dsonar.login=$TOKEN -Dsonar.host.url=$URL
