@@ -14,7 +14,7 @@ jobs:
 
     - name: Deploy
       run: |
-        sqlplus -s ${{ secrets.username }}/${{ secrets.password }}@your_oracle_db @path/to/deploy.sql
+        sqlplus -s ${{ secrets.username }}/${{ secrets.password }}@orcldr @./deploy.sql
       env:
-        ORACLE_SID: your_oracle_db
+        ORACLE_SID: orclpdb
 
