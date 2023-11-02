@@ -37,8 +37,11 @@ jobs:
           # Create a ZIP archive of the deploy.sql file
           zip -r deploy.sql.zip deploy.sql
           
-      - name: Upload ZIP to GitHub Packages
+      - name: Upload ZIP to artifact
         uses: actions/upload-artifact@v2
         with:
           name: deploy-sql
           path: deploy.sql.zip
+
+      - name: Publish package
+        run: mvn --batch-mode deploy
