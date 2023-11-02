@@ -14,7 +14,8 @@ jobs:
 
     - name: Deploy
       run: |
-         & "C:\app\db\bin\sqlplus.exe" ${{ secrets.username }}/${{ secrets.password }}@orcle @./deploy.sql
+         & "C:\app\db\bin\sqlplus.exe" "$env:username/$env:password@orcle" @./deploy.sql
       env:
         ORACLE_SID: orcle
-
+        username: ${{ secrets.username }}
+        password: ${{ secrets.password }}
