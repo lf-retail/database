@@ -32,10 +32,11 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
 
-      - name: Publish to GitHub Packages
+      - name: Create Zip
         run: |
           # Create a ZIP archive of the deploy.sql file
           zip -r deploy.sql.zip deploy.sql
+          
       - name: Upload ZIP to GitHub Packages
         uses: actions/upload-artifact@v2
         with:
