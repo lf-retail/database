@@ -5,6 +5,7 @@ on:
 
 jobs:
   deploy:
+    name: Deploy Oracle Database
     runs-on: self-hosted
 
     steps:
@@ -13,9 +14,7 @@ jobs:
 
     - name: Deploy
       run: |
-        sqlplus -s username/password@your_oracle_db @path/to/deploy.sql
+        sqlplus -s ${{ secrets.username }}/${{ secrets.password }}@your_oracle_db @path/to/deploy.sql
       env:
-          username: ${{ secrets.username }}
-          password: ${{ secrets.password }}
+        ORACLE_SID: your_oracle_db
 
-    
