@@ -44,4 +44,7 @@ jobs:
           path: deploy.sql.zip
 
       - name: Publish package
-        run: mvn deploy:deploy-file
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @deploy.sql.zip "https://maven.pkg.github.com/lf-retail/database/com/example/my-artifact/1.0/deploy-sql-1.0.zip"
