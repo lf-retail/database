@@ -44,4 +44,10 @@ jobs:
           path: deploy.sql.zip
 
       - name: Publish package
-        run: mvn --batch-mode deploy
+        run: mvn deploy:deploy-file -Durl=https://maven.pkg.github.com/lf-retail/database \
+                            -DrepositoryId=github \
+                            -Dfile=deploy.sql.zip \
+                            -DgroupId=com.example  \
+                            -DartifactId=my-artifact  \
+                            -Dversion=1.0  \
+                            -Dpackaging=zip
