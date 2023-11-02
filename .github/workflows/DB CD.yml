@@ -12,10 +12,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Check sqlplus location
-      run: |
-        which sqlplus
-
     - name: Deploy
       run: |
         & "C:\app\db\bin\sqlplus.exe"  ${{ secrets.username }}/${{ secrets.password }}@orcldr @./deploy.sql
