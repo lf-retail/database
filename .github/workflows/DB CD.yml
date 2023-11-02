@@ -13,4 +13,9 @@ jobs:
 
     - name: Deploy
       run: |
-        & "C:\app\db\bin\sqlplus.exe" viveksundar5/Svs@9551@orclpdb @.\deploy.sql
+        sqlplus -s username/password@your_oracle_db @path/to/deploy.sql
+      env:
+          username: ${{ secrets.username }}
+          password: ${{ secrets.password }}
+
+    
