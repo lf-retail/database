@@ -1,0 +1,420 @@
+database-ci.yml
+
+name: Database CI
+
+on:
+  workflow_call:
+    inputs:
+      repoName:
+        required: true
+        type: string 
+      branchName:
+        type: string
+        required: true
+    secrets:
+      TOKEN_GITHUB:
+        required: true
+      SONAR_TOKEN:
+        required: true
+      SONAR_HOST_URL:
+        required: true
+
+
+env:
+  REPOSITORY: ${{ inputs.repoName }}
+  TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check Out Code from Dispatched Repo
+      uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.repoName }}
+        ref: release/r-${{inputs.releaseVersion}}
+        token: ${{ secrets.TOKEN_GITHUB }}
+
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+          java-version: 11
+       
+    - name: Grant execute permission
+      run: chmod +x deploy.sql
+
+    - name: SonarCloud Analysis
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    - name: Create Zip
+      run: |
+          zip -r deploy.sql.zip deploy.sql
+
+    - name: Publish package
+      env:
+         GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB}}
+      run: |
+         curl -X PUT -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @deploy.sql.zip "https://maven.pkg.github.com/rakbank-internal/RetailOnboarding-DB/Rak/DEH-Retail/deploy-sql/${{github.event.inputs.releaseVersion}}/deploy-sql-${{github.event.inputs.releaseVersion}}.zip"
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Normal CI workflow
+
+name: Database 
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+          java-version: 11
+       
+    - name: Grant execute permission
+      run: chmod +x deploy.sql
+
+    - name: SonarCloud Analysis
+      uses: sonarsource/sonarqube-scan-action@master
+      env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+    - name: Create Zip
+      run: |
+          zip -r deploy.sql.zip deploy.sql
+
+    - name: Publish package
+      env:
+         GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB}}
+      run: |
+         curl -X PUT -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @deploy.sql.zip "https://maven.pkg.github.com/rakbank-internal/SMEDigitalBank-DB/com/rakbank/infosys/lib/smedigitalbank-database/deploy-sql/1.0/deploy-sql-1.0.zip"
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+Deploy Database CD process 
+
+name: Deploy Database
+
+on:
+  workflow_call:
+    inputs:
+      env_value:
+        required: true
+        type: string
+        
+      repoName:
+        required: true
+        type: string
+
+      branchName:
+        type: string
+        required: true
+
+      version:
+        type: string
+        required: true
+
+    secrets:
+      TOKEN_GITHUB:
+        required: true
+      ORAC_USERNAME:
+        required: true
+      ORAC_PASSWORD:
+        required: true
+env:
+  REPOSITORY: ${{ inputs.repoName }}
+  TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+
+jobs:
+  deploy:
+    runs-on:
+      group: rakbank-self-hosted-runner
+      labels: dehitdevtra1
+    environment: ${{ inputs.env_value }}
+      
+    steps: 
+      - name: Checkout Ansible playbook
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ inputs.repoName }}
+          ref: release/r-${{inputs.releaseVersion}}
+          token: ${{ secrets.TOKEN_GITHUB }}
+
+      - name: Run playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+          ORAC_USERNAME: ${{ secrets.ORAC_USERNAME }}
+          ORAC_PASSWORD: ${{ secrets.ORAC_PASSWORD }}
+          version: ${{ github.event.inputs.releaseVersion }}
+
+        run: |
+          cd ${{ github.workspace }}
+          ansible-playbook -vvv -b --extra-vars "target=oracle_servers" -i inventory.ini ./playbook/retaildbdeployment.yml
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Deploy database CD with deploymode and rollbackmode 
+
+name: Deploy Database
+on:
+  workflow_dispatch:
+
+jobs:
+   deploy:
+    runs-on: 
+      group: rakbank-self-hosted-runner
+      labels: dehitdevtra1
+    steps: 
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Run Ansible Playbook
+        env:
+          TOKEN_GITHUB: ${{ secrets.TOKEN_GITHUB }}
+          ORA_USERNAME: ${{ secrets.ORAC_USERNAME }}
+          ORA_PASSWORD: ${{ secrets.ORAC_PASSWORD }}
+        run: |
+          cd ${{ github.workspace }}
+          ansible-playbook -vvv -b -i inventory.text ./playbook/smedbdeployment.yml --extra-vars "target=oracle_servers destination=${{ github.workspace }} deploy_mode=true rollback_mode=false"
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    playbook
+
+  - hosts: '{{ target }}'
+    become: yes
+    become_user: itdevtra
+    gather_facts: no
+    roles:
+      - smedbdeployment
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+     
+ Cacherefresh
+
+- hosts: '{{ target }}'
+  become: yes
+  become_user: itdevtra
+  gather_facts: no
+  tasks:
+    - name: Run ls -la on the Target Server
+      command: "ls -la /RAKDEH/FEBA_BATCH_11.11"
+      register: ls_result
+    - name: Execute the cache script 
+      shell: /RAKDEH/FEBA_BATCH_11.11/redis_11.11.sh
+      ignore_errors: yes
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+roles/smedbdeployment/defaults/main.yml
+
+---
+oracle_host: "10.15.12.50:5300"
+github_token: "{{ lookup('env', 'TOKEN_GITHUB') }}"
+username: "{{ lookup('env', 'ORA_USERNAME') }}"
+password: "{{ lookup('env', 'ORA_PASSWORD') }}"
+ORACLE_SID: "CNVGDBEN"
+zip_file_url: "https://maven.pkg.github.com/rakbank-internal/SMEDigitalBank-DB/com/rakbank/infosys/lib/smedigitalbank-database/deploy-sql/1.0/deploy-sql-1.0.zip"
+zip_file_name: "{{ zip_file_url | basename }}"
+zip_file_url_1: "https://maven.pkg.github.com/rakbank-internal/SMEDigitalBank-DB/com/rakbank/infosys/lib/smedigitalbank-database/dbscript/1.0/dbscript-1.0.zip"
+zip_file_name_1: "{{ zip_file_url_1 | basename }}"
+zip_file_url_2: "https://maven.pkg.github.com/rakbank-internal/SMEDigitalBank-DB/com/rakbank/infosys/lib/smedigitalbank-database/rollback-sql/1.0/rollback-sql-1.0.zip"
+zip_file_name_2: "{{ zip_file_url_2 | basename }}"
+ORACLE_HOME: "/oracle19c/app/oracle/product/19.3.0/db_home"
+PATH: "{{ ORACLE_HOME }}/bin:{{ PATH }}"
+oracle_deployment_dir: "/backup"
+...
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+roles/smedbdeployment/tasks/main-deploy.yml
+
+---
+- name: Download ZIP from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ item.url }}"
+    dest: "/tmp/{{ item.name }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+  loop:
+    - { url: "{{ zip_file_url }}", name: "{{ zip_file_name }}" }
+    - { url: "{{ zip_file_url_1 }}", name: "{{ zip_file_name_1 }}" }
+
+- name: Copy ZIP to Target Server
+  copy:
+    src: "/tmp/{{ item.name }}"
+    dest: "{{ oracle_deployment_dir }}/{{ item.name }}"
+  loop:
+    - { name: "{{ zip_file_name }}" }
+    - { name: "{{ zip_file_name_1 }}" }
+
+- name: Extract ZIP on Target Server
+  unarchive:
+    src: "{{ oracle_deployment_dir }}/{{ item.name }}"
+    dest: "{{ oracle_deployment_dir }}"
+    remote_src: yes
+  loop:
+    - { name: "{{ zip_file_name }}" }
+    - { name: "{{ zip_file_name_1 }}" }
+
+- name: Run ls -la on the Target Server
+  command: "ls -la {{ oracle_deployment_dir }}"
+  register: ls_result
+
+- name: Deploy Database with custom timeout
+  become: true
+  become_user: itdevtra
+  shell: |
+    export ORACLE_HOME=/oracle19c/app/oracle/product/19.3.0/db_home
+    export PATH=$ORACLE_HOME/bin:$PATH
+    sqlplus -s {{ username }}/{{ password }}@{{ oracle_host }}/{{ ORACLE_SID }} @{{ oracle_deployment_dir }}/deploy.sql | tee /tmp/deploy_output.log
+    grep -q 'ORA-' /tmp/deploy_output.log && exit 1 || exit 0
+  async: 60
+  poll: 0
+  register: deploy_result
+
+- name: Wait for the deploy task to finish
+  async_status:
+    jid: "{{ deploy_result.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 60
+  delay: 1
+
+- name: Clean up ZIP file from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ zip_file_name }}"
+    state: absent
+  run_once: true
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+roles/smedbdeployment/tasks/main-rollback.yml
+---
+- name: Download ZIP from GitHub packages on Runner
+  delegate_to: localhost
+  run_once: true
+  get_url:
+    url: "{{ zip_file_url_2 }}"
+    dest: "/tmp/{{ zip_file_name_2 }}"
+    headers:
+      Authorization: "token {{ github_token }}"
+
+- name: Copy ZIP to Target Server
+  copy:
+    src: "/tmp/{{ zip_file_name_2 }}"
+    dest: "{{ oracle_deployment_dir }}/{{ zip_file_name_2 }}"
+
+- name: Extract ZIP on Target Server
+  unarchive:
+    src: "{{ oracle_deployment_dir }}/{{ zip_file_name_2 }}"
+    dest: "{{ oracle_deployment_dir }}"
+    remote_src: yes
+
+- name: Deploy Database with custom timeout
+  become: true
+  become_user: itdevtra
+  shell: |
+    export ORACLE_HOME=/oracle19c/app/oracle/product/19.3.0/db_home
+    export PATH=$ORACLE_HOME/bin:$PATH
+    sqlplus -s {{ username }}/{{ password }}@{{ oracle_host }}/{{ ORACLE_SID }} @{{ oracle_deployment_dir }}/rollback.sql | tee /tmp/deploy_output.log
+    grep -q 'ORA-' /tmp/deploy_output.log && exit 1 || exit 0
+  async: 60
+  poll: 0
+  register: deploy_result
+
+- name: Wait for the deploy task to finish
+  async_status:
+    jid: "{{ deploy_result.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 60
+  delay: 1
+
+- name: Clean up ZIP file from Runner
+  delegate_to: localhost
+  file:
+    path: "/tmp/{{ zip_file_name_2 }}"
+    state: absent
+  run_once: true
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+ansible.cfg
+
+[defaults]
+host_key_checking=False
+deprecation_warnings=False
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_ssh_extra_args='-o StrictHostKeyChecking=no'
+remote_tmp=/tmp
+roles_path=roles/
+comment_warnings=False
+command_warnings=False
+interpreter_python=auto
+ANSIBLE_DEPRECATION_WARNINGS=False
+ANSIBLE_COMMAND_WARNINGS=False
+allow_world_readable_tmpfiles=yes
+ansible_pipelining=True
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+inventory.ini
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[redis_servers]
+10.15.24.34
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+inventory.text
+
+[all:vars]
+ansible_user=itdevtra
+ansible_ssh_port=22
+
+[oracle_servers]
+10.15.12.50
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+sonar-project.properties
+
+sonar.projectKey=sme-test
+sonar.organization=rakrepoadmin-github
+sonar.projectVersion=1.0
+sonar.sources=./deploy.sql
+sonar.language=sql
+sonar.sourceEncoding=UTF-8
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+deploy.sql
+
+@/backup/dbscript/table4.sql;
+@/backup/dbscript/table5.sql;
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+rollback.sql
+
+CREATE TABLE "DEV_OPS"."TABLE_1" 
+(
+    "DB_TS" NUMBER(5,0), 
+    "BANK_ID" NVARCHAR2(11), 
+    "SEQ_NUM" NUMBER(10,0), 
+    "CORP_ID" NVARCHAR2(32), 
+    "ENTITY_KEY" NUMBER(10,0), 
+    "ACTION" NVARCHAR2(10), 
+    "ACTION_BY" NVARCHAR2(100), 
+    "REQ_DETAILS" CLOB, 
+    "FREE_TEXT_1" NVARCHAR2(50), 
+    "FREE_TEXT_2" NVARCHAR2(50), 
+    "R_CRE_TIME" DATE
+);
+DROP TABLE "DEV_OPS"."TABLE_1"; 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
